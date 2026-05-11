@@ -4,6 +4,32 @@ Build log. One entry per milestone or significant event. Brief, honest, dated. N
 
 ---
 
+## 2026-05-09 (later) — M2 begins: `bootstrap_ci` shipped, first external case study
+
+Late same-day, started M2. Shipped the first statistical primitive and used it on a real external benchmark.
+
+**Shipped (Gnomon)**
+- `gnomon.stats.bootstrap_ci` — typed wrapper over `scipy.stats.bootstrap` with a `BootstrapResult` dataclass that knows how to answer the decision-relevant question (`excludes(value)` → bool). 11 tests pass: behavioral (CI contains true mean, excludes 0 for strong correlation, includes 0 for independent data) and property-based (output matches direct `scipy.stats.bootstrap` calls).
+- Added `numpy>=1.26` and `scipy>=1.13` as runtime dependencies.
+- Re-exported at top level: `from gnomon import bootstrap_ci, BootstrapResult`.
+- Total Gnomon test count: 17 passing, ruff clean.
+
+**Case study (external repo)**
+- Forked `parviam/tastybench` to `subramanyanashwath/tastybench` and added a full statistical re-evaluation at `analyses/`.
+- Headline findings on Parv Mahajan's public data:
+  - Across **33 reported (experiment × model × epochs) correlations**, only **3 have 95% bootstrap CIs that exclude zero**.
+  - Under Bradley-Terry replacement of Elo on the focused experiment, **666 / 666 paper pairs (100%) have overlapping 95% CIs** — the precise Elo ranking is essentially noise.
+  - Power analysis: TastyBench v2 needs n ≈ 85 papers (vs. current 38) to reliably detect a true ρ = 0.3 at 80% power.
+- All numbers regenerate from public data with `python analyses/statistical_reeval.py`.
+- This is the first case study that uses a Gnomon primitive on a real external benchmark, and the first piece of public methodology writing in the project's voice.
+
+**Outreach prepped**
+- Draft DM to Parv Mahajan (METR) saved locally; sending tomorrow morning with notebook link.
+
+**Reflection.** The single most useful pattern this session: build the primitive once in Gnomon (with proper tests), then use it on a real public benchmark to produce a genuinely useful artifact. Same effort produces (a) a tested Gnomon feature, (b) an external case study, and (c) public methodology writing — three deliverables from one chunk of work.
+
+---
+
 ## 2026-05-09 — M1 shipped
 
 Scaffolded the repository from scratch in a single working session. Decided the brand, structure, and PRD before writing a line of production code — an inversion of the more common "code first, document later" pattern that I expect to pay back across M2–M5.
