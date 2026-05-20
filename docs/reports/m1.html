@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gnomon M1 — Foundation</title>
+<meta name="description" content="Gnomon M1 milestone report. Naming, scope, scaffold. Shipped 2026-05-09.">
+<style>
+:root {
+  --bg: #F4F1EA;
+  --surface: #FBF9F4;
+  --ink: #1A1815;
+  --muted: #5A554D;
+  --border: #D9D2C2;
+  --accent: #8B4B2A;
+  --accent-soft: #E8D5C0;
+  --accent-faint: #F2E5D6;
+  --code-bg: #F0EBE0;
+  --done: #6B8E5A;
+  --serif: 'Iowan Old Style', 'Charter', Georgia, 'Times New Roman', serif;
+  --sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, 'JetBrains Mono', Menlo, 'SF Mono', Consolas, monospace;
+  --measure: 38rem;
+}
+* { box-sizing: border-box; }
+html { font-size: 17px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--serif);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.container {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 4rem 1.5rem 6rem;
+}
+.wide {
+  max-width: 56rem;
+  margin: 0 auto;
+}
+header.masthead { border-bottom: 1px solid var(--border); padding-bottom: 2rem; margin-bottom: 3rem; }
+.eyebrow {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+h1 {
+  font-size: 2.75rem;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  margin: 0.6rem 0 0;
+  font-weight: 700;
+}
+h2 {
+  font-size: 1.55rem;
+  line-height: 1.2;
+  margin: 4rem 0 0.4rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+h3 {
+  font-size: 1.1rem;
+  line-height: 1.3;
+  margin: 2rem 0 0.3rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.subhead {
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin-top: 1rem;
+  letter-spacing: 0.01em;
+}
+p { margin: 0.95rem 0; }
+.tldr {
+  background: var(--surface);
+  border-left: 3px solid var(--accent);
+  padding: 1.6rem 1.8rem;
+  margin: 2.5rem 0 3rem;
+  font-size: 1.04rem;
+  line-height: 1.65;
+}
+.tldr-label {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+code, .code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: var(--code-bg);
+  padding: 0.1rem 0.32rem;
+  border-radius: 2px;
+}
+pre {
+  background: var(--code-bg);
+  padding: 1.1rem 1.3rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  margin: 1.5rem 0;
+}
+pre code { background: none; padding: 0; font-size: 1em; }
+a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--accent);
+}
+a:hover { border-bottom-style: solid; }
+.figure { margin: 2.5rem 0; }
+.figure svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+.figcaption {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.85rem;
+  text-align: center;
+  line-height: 1.5;
+}
+.callout {
+  background: var(--accent-faint);
+  border-radius: 4px;
+  padding: 1.1rem 1.35rem;
+  margin: 1.75rem 0;
+  font-family: var(--sans);
+  font-size: 0.93rem;
+  line-height: 1.55;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin: 1.5rem 0 2rem;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.95rem 1.05rem;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.card .label {
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+.card strong { color: var(--ink); display: block; margin-bottom: 0.2rem; font-size: 0.95rem; }
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin: 2rem 0;
+  overflow: hidden;
+}
+.stat {
+  background: var(--surface);
+  padding: 1.1rem 1.2rem;
+  font-family: var(--sans);
+}
+.stat .v {
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-family: var(--serif);
+  color: var(--ink);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.stat .k {
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 0.4rem;
+}
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  counter-reset: feat;
+}
+.feature-list li {
+  display: grid;
+  grid-template-columns: 2rem 1fr auto;
+  gap: 0.9rem;
+  align-items: baseline;
+  padding: 0.85rem 0;
+  border-bottom: 1px dashed var(--border);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  counter-increment: feat;
+}
+.feature-list li::before {
+  content: counter(feat, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+.feature-list .status {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.5rem;
+  border-radius: 3px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.status.frozen { background: var(--accent-soft); color: var(--accent); }
+.status.deferred { background: transparent; color: var(--muted); border: 1px dashed var(--border); }
+.constraint-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1.3rem 1.5rem;
+  margin: 1.75rem 0;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+}
+.constraint-box ul { list-style: none; padding: 0; margin: 0.5rem 0 0; }
+.constraint-box li {
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--border);
+}
+.constraint-box li:last-child { border-bottom: none; }
+.constraint-box li::before {
+  content: '·';
+  color: var(--accent);
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+.limit-list { list-style: none; padding: 0; margin: 1.25rem 0; }
+.limit-list li {
+  padding: 0.85rem 0 0.85rem 1.4rem;
+  border-bottom: 1px dashed var(--border);
+  position: relative;
+}
+.limit-list li::before {
+  content: '✕';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  top: 1rem;
+}
+.milestone-strip {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  margin: 2rem 0;
+  font-family: var(--sans);
+}
+.ms {
+  padding: 0.85rem 0.4rem;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-right: none;
+  font-size: 0.78rem;
+}
+.ms:last-child { border-right: 1px solid var(--border); }
+.ms.done { background: var(--accent-soft); color: var(--ink); }
+.ms.current {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.ms .id { font-weight: 700; font-size: 0.88rem; letter-spacing: 0.04em; }
+.ms .date { color: var(--muted); display: block; margin-top: 0.15rem; font-size: 0.7rem; }
+.ms.current .date { color: rgba(244, 241, 234, 0.85); }
+.ms.done .date { color: var(--muted); }
+blockquote {
+  border-left: 2px solid var(--accent-soft);
+  padding: 0.3rem 0 0.3rem 1.3rem;
+  color: var(--muted);
+  font-style: italic;
+  margin: 1.5rem 0;
+}
+footer.notes {
+  margin-top: 6rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--sans);
+  font-size: 0.83rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+footer.notes h3 {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 0.7rem;
+  font-weight: 600;
+}
+footer.notes ol { padding-left: 1.2rem; margin: 0.5rem 0 1.5rem; }
+footer.notes li { margin: 0.3rem 0; }
+.collision-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  margin: 1.5rem 0 2rem;
+}
+.collision {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 3px;
+  padding: 0.85rem 1rem;
+  font-family: var(--sans);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+.collision .head {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+.collision .name { font-weight: 700; color: var(--ink); }
+.meanings {
+  margin: 2rem 0;
+  display: grid;
+  gap: 0;
+}
+.meaning {
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  gap: 1.2rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+}
+.meaning:last-child { border-bottom: none; }
+.meaning .glyph svg { display: block; }
+.meaning .body { font-family: var(--sans); font-size: 0.93rem; line-height: 1.55; }
+.meaning .body strong {
+  display: block;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+.triad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin: 2rem 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.triad-cell {
+  padding: 1.5rem 1rem 1.25rem;
+  background: var(--surface);
+  text-align: center;
+  border-right: 1px solid var(--border);
+  font-family: var(--sans);
+}
+.triad-cell:last-child { border-right: none; }
+.triad-cell .verb {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+.triad-cell .name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-family: var(--serif);
+  color: var(--ink);
+  display: block;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.01em;
+}
+.triad-cell .meta {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.repo-link {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  background: var(--code-bg);
+  padding: 0.4rem 0.6rem;
+  border-radius: 3px;
+  display: inline-block;
+  margin: 0.4rem 0;
+  border: 1px solid var(--border);
+}
+.nav-rule {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 4rem 0 2rem;
+}
+.report-nav {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  margin: 2rem 0;
+}
+@media (max-width: 600px) {
+  html { font-size: 15px; }
+  .container { padding: 2rem 1.1rem 4rem; }
+  h1 { font-size: 2.05rem; }
+  h2 { font-size: 1.35rem; margin-top: 3rem; }
+  .cards, .stats, .collision-grid { grid-template-columns: 1fr; }
+  .milestone-strip { grid-template-columns: repeat(3, 1fr); }
+  .ms { font-size: 0.7rem; }
+  .triad { grid-template-columns: 1fr; }
+  .triad-cell { border-right: none; border-bottom: 1px solid var(--border); }
+  .triad-cell:last-child { border-bottom: none; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="masthead">
+  <div class="eyebrow">Gnomon · Milestone Report</div>
+  <h1>M1 — Foundation</h1>
+  <div class="subhead">Naming, scope, scaffold. Shipped 2026-05-09.</div>
+</header>
+
+<div class="tldr">
+  <span class="tldr-label">TL;DR</span>
+  M1 ships no statistical machinery. It ships the conditions for one: a public, MIT-licensed repository under a name with three semantic layers, a product requirements document frozen at six features, and a Python scaffold that compiled, passed six tests, and went green on continuous integration on its first push — twenty-one seconds wall-clock. The deliverable is the boundary inside which M2 through M5 will be built. The temptation to begin M2 features during M1 was real and present throughout. It did not win.
+</div>
+
+<h2>Where Gnomon fits</h2>
+
+<p>The LLM evaluation ecosystem has names for two of its three layers. <em>Discover</em> is the verb that Anthropic's <a href="https://github.com/safety-research/petri">Petri</a> operationalizes — automated auditing for concerning model behaviors. <em>Quantify</em> is the verb that Anthropic's <a href="https://github.com/safety-research/bloom">Bloom</a> and the benchmark-suite tradition operationalize — counting how often a behavior occurs. The third layer — <em>Decide</em> — is where teams currently make the most mistakes. They ship changes whose deltas fall inside the noise floor of the measurement. They run studies that were never powered to detect the effect of interest. They trust LLM-as-judge metrics that have not been calibrated against human raters. Gnomon is the statistical decision layer that completes the stack.</p>
+
+<div class="figure">
+<svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three-layer evaluation stack: Discover, Quantify, Decide">
+  <defs>
+    <marker id="arr-m1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#8B4B2A"/>
+    </marker>
+  </defs>
+  <!-- Three panels -->
+  <g font-family="-apple-system, sans-serif">
+    <!-- Discover -->
+    <rect x="20" y="40" width="200" height="140" rx="4" fill="#FBF9F4" stroke="#D9D2C2" stroke-width="1"/>
+    <text x="120" y="68" text-anchor="middle" font-size="11" font-weight="700" letter-spacing="2" fill="#8B4B2A">DISCOVER</text>
+    <text x="120" y="105" text-anchor="middle" font-size="22" font-weight="700" fill="#1A1815" font-family="Iowan Old Style, Charter, Georgia, serif">Petri</text>
+    <text x="120" y="135" text-anchor="middle" font-size="11" fill="#5A554D">What concerning</text>
+    <text x="120" y="150" text-anchor="middle" font-size="11" fill="#5A554D">behaviors does</text>
+    <text x="120" y="165" text-anchor="middle" font-size="11" fill="#5A554D">this model exhibit?</text>
+
+    <!-- Quantify -->
+    <rect x="260" y="40" width="200" height="140" rx="4" fill="#FBF9F4" stroke="#D9D2C2" stroke-width="1"/>
+    <text x="360" y="68" text-anchor="middle" font-size="11" font-weight="700" letter-spacing="2" fill="#8B4B2A">QUANTIFY</text>
+    <text x="360" y="105" text-anchor="middle" font-size="22" font-weight="700" fill="#1A1815" font-family="Iowan Old Style, Charter, Georgia, serif">Bloom</text>
+    <text x="360" y="135" text-anchor="middle" font-size="11" fill="#5A554D">How often does</text>
+    <text x="360" y="150" text-anchor="middle" font-size="11" fill="#5A554D">behavior X occur,</text>
+    <text x="360" y="165" text-anchor="middle" font-size="11" fill="#5A554D">and at what severity?</text>
+
+    <!-- Decide -->
+    <rect x="500" y="40" width="200" height="140" rx="4" fill="#E8D5C0" stroke="#8B4B2A" stroke-width="1.5"/>
+    <text x="600" y="68" text-anchor="middle" font-size="11" font-weight="700" letter-spacing="2" fill="#8B4B2A">DECIDE</text>
+    <text x="600" y="105" text-anchor="middle" font-size="22" font-weight="700" fill="#1A1815" font-family="Iowan Old Style, Charter, Georgia, serif">Gnomon</text>
+    <text x="600" y="135" text-anchor="middle" font-size="11" fill="#1A1815">Is v2 better than v1?</text>
+    <text x="600" y="150" text-anchor="middle" font-size="11" fill="#1A1815">Am I powered to</text>
+    <text x="600" y="165" text-anchor="middle" font-size="11" fill="#1A1815">detect the effect?</text>
+
+    <!-- Arrows -->
+    <line x1="222" y1="110" x2="256" y2="110" stroke="#8B4B2A" stroke-width="1.2" marker-end="url(#arr-m1)"/>
+    <line x1="462" y1="110" x2="496" y2="110" stroke="#8B4B2A" stroke-width="1.2" marker-end="url(#arr-m1)"/>
+
+    <!-- Top labels -->
+    <text x="360" y="22" text-anchor="middle" font-size="10" fill="#5A554D" letter-spacing="3">THE EVAL STACK</text>
+    <line x1="280" y1="30" x2="440" y2="30" stroke="#D9D2C2" stroke-width="0.5"/>
+  </g>
+</svg>
+<div class="figcaption">Figure 1. The three-layer stack. Discover and Quantify are existing categories; Decide is the one Gnomon claims.</div>
+</div>
+
+<h2>The naming decision</h2>
+
+<p>The internal codename was <em>Gnomon</em> from the strategic phase onward. During PRD drafting it was briefly renamed <em>Aletheia</em> — Greek ἀλήθεια, <em>truth</em> or <em>disclosure</em> — because the philosophical framing felt unusually clean for a project about epistemic care in evaluation. Pre-publish due diligence on the Aletheia name surfaced four collisions, listed below.</p>
+
+<div class="collision-grid">
+  <div class="collision">
+    <div class="head">Collision · February 2026</div>
+    <div class="name">DeepMind's Aletheia</div>
+    Flagship Gemini Deep Think math research agent. Solved four open Erdős conjectures. Framed by DeepMind as "a homage to the Greek goddess of Truth" — the same etymological framing intended for Gnomon.
+  </div>
+  <div class="collision">
+    <div class="head">Collision · Trademark</div>
+    <div class="name">Aletheia Framework™</div>
+    Rolls-Royce ethical-AI governance framework, OECD-cataloged. Trademark held outside the eval space but adjacent enough to confuse SEO.
+  </div>
+  <div class="collision">
+    <div class="head">Collision · arXiv</div>
+    <div class="name">Aletheia (2601.01532)</div>
+    January 2026 paper on judge calibration in reasoning models. Uncomfortably adjacent to Gnomon's planned V1 judge-calibration feature.
+  </div>
+  <div class="collision">
+    <div class="head">Collision · GitHub</div>
+    <div class="name">Youcef3939/aletheia</div>
+    Existing XAI explainability framework. Smaller, but already indexed.
+  </div>
+</div>
+
+<p>Four AI/ML projects with the same name, one of them a flagship Google effort, one of them on Gnomon's exact methodological territory. The naming brief was no longer "find a good name" but "find a name that the project can still own." Aletheia did not pass that bar. The decision reverted to the original codename. The full record lives in <a href="../decisions/0001-naming.md">ADR-0001</a>.</p>
+
+<h3>Three meanings of gnomon</h3>
+
+<p>A gnomon is the upright piece of a sundial that casts the shadow used to measure time. It is also a Euclidean geometric figure: the L-shaped piece that, when added to a smaller square, completes a larger one. The Greek root γνώμων means <em>indicator</em> or <em>that which knows</em>. Three semantic layers, all on-thesis for a statistical decision layer.</p>
+
+<div class="meanings">
+  <div class="meaning">
+    <div class="glyph">
+      <svg width="56" height="56" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="28" cy="34" r="18" fill="none" stroke="#8B4B2A" stroke-width="1.2"/>
+        <line x1="28" y1="34" x2="28" y2="14" stroke="#8B4B2A" stroke-width="1.6"/>
+        <circle cx="28" cy="14" r="2" fill="#8B4B2A"/>
+        <line x1="28" y1="34" x2="42" y2="48" stroke="#1A1815" stroke-width="0.7" stroke-dasharray="2 2"/>
+      </svg>
+    </div>
+    <div class="body">
+      <strong>Indicator</strong>
+      A statistical metric is an indicator. A ship/no-ship recommendation is an indicator. The project's job is to be the indicator — and to be honest about the precision of the reading.
+    </div>
+  </div>
+  <div class="meaning">
+    <div class="glyph">
+      <svg width="56" height="56" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="42" cy="14" r="4" fill="#8B4B2A"/>
+        <line x1="42" y1="14" x2="28" y2="44" stroke="#8B4B2A" stroke-width="0.6" stroke-dasharray="2 2"/>
+        <line x1="28" y1="44" x2="28" y2="30" stroke="#1A1815" stroke-width="1.6"/>
+        <line x1="6" y1="48" x2="50" y2="48" stroke="#5A554D" stroke-width="0.8"/>
+        <line x1="28" y1="44" x2="20" y2="48" stroke="#1A1815" stroke-width="2.2"/>
+      </svg>
+    </div>
+    <div class="body">
+      <strong>Measurement through indirection</strong>
+      A sundial does not measure the sun directly; it measures the shadow. LLM evaluation does not measure model behavior directly; it measures projections of it — outputs, traces, judge scores. Same epistemic shape. The artifact you have access to is always a degraded image of the artifact you care about.
+    </div>
+  </div>
+  <div class="meaning">
+    <div class="glyph">
+      <svg width="56" height="56" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="8" y="20" width="20" height="20" fill="none" stroke="#5A554D" stroke-width="1"/>
+        <path d="M 28 8 L 48 8 L 48 40 L 28 40 L 28 20 L 8 20" fill="none" stroke="#8B4B2A" stroke-width="1.4"/>
+        <text x="18" y="34" font-size="9" font-family="serif" fill="#5A554D" text-anchor="middle" font-style="italic">a²</text>
+        <text x="38" y="20" font-size="8" font-family="serif" fill="#8B4B2A" text-anchor="middle" font-style="italic">gnomon</text>
+      </svg>
+    </div>
+    <div class="body">
+      <strong>The completing piece</strong>
+      In Euclidean geometry the gnomon is what you add to a square to make it larger. In the three-layer stack — Discover, Quantify, Decide — Gnomon is the piece that completes the figure.
+    </div>
+  </div>
+</div>
+
+<h3>The naming triad</h3>
+
+<p>The three projects now form a coherent metaphor family: Petri (laboratory dish), Bloom (botanical growth), Gnomon (scientific instrument). Three different metaphor families, each tied to its layer's verb, all under the umbrella of <em>scientific instruments</em>.</p>
+
+<div class="triad">
+  <div class="triad-cell">
+    <span class="verb">Discover</span>
+    <span class="name">Petri</span>
+    <div class="meta">A dish. Where you grow things to look at them.</div>
+  </div>
+  <div class="triad-cell">
+    <span class="verb">Quantify</span>
+    <span class="name">Bloom</span>
+    <div class="meta">Botanical growth. Counting what comes up.</div>
+  </div>
+  <div class="triad-cell">
+    <span class="verb">Decide</span>
+    <span class="name">Gnomon</span>
+    <div class="meta">An instrument. Measures the shadow, not the sun.</div>
+  </div>
+</div>
+
+<blockquote>Aletheia is a more poetic name. Gnomon is a stronger one. Letting go of the prettier name and keeping the more durable one is, recursively, the kind of decision Gnomon itself is designed to support. <span style="font-style:normal">— ADR-0001</span></blockquote>
+
+<h2>What shipped</h2>
+
+<p>The M1 ship list is small. The intent was not to produce features but to produce the constraints inside which features will be produced. The PRD's six-feature freeze, the platform-neutrality rule, the synthetic-data-only rule, and the HTML-first reporting rule are all parts of the M1 deliverable as much as any line of Python.</p>
+
+<div class="stats">
+  <div class="stat"><div class="v">19</div><div class="k">files</div></div>
+  <div class="stat"><div class="v">641</div><div class="k">insertions (LOC)</div></div>
+  <div class="stat"><div class="v">6</div><div class="k">tests passing, ruff clean</div></div>
+  <div class="stat"><div class="v">21 s</div><div class="k">CI green, first push</div></div>
+</div>
+
+<div class="figure">
+<svg viewBox="0 0 660 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gnomon M1 package layout">
+  <style>
+    .branch { stroke: #8B4B2A; stroke-width: 1.2; fill: none; }
+    .branch-thin { stroke: #D9D2C2; stroke-width: 1; fill: none; }
+    .mod { font-family: ui-monospace, Menlo, monospace; font-size: 12px; fill: #1A1815; }
+    .modname { font-family: ui-monospace, Menlo, monospace; font-size: 12px; fill: #8B4B2A; font-weight: 600; }
+    .ann { font-family: -apple-system, sans-serif; font-size: 10.5px; fill: #5A554D; }
+    .root { font-family: ui-monospace, Menlo, monospace; font-size: 13px; fill: #1A1815; font-weight: 700; }
+  </style>
+  <!-- Root -->
+  <text x="30" y="40" class="root">gnomon/</text>
+
+  <!-- types.py -->
+  <line x1="60" y1="48" x2="60" y2="74" class="branch-thin"/>
+  <line x1="60" y1="74" x2="80" y2="74" class="branch"/>
+  <text x="88" y="78" class="modname">types.py</text>
+  <text x="200" y="78" class="ann">EvalCase · EvalResult · EvalRun (dataclasses, with `source` field for ingest lineage)</text>
+
+  <!-- agents/ -->
+  <line x1="60" y1="48" x2="60" y2="108" class="branch-thin"/>
+  <line x1="60" y1="108" x2="80" y2="108" class="branch"/>
+  <text x="88" y="112" class="mod">agents/</text>
+  <line x1="100" y1="115" x2="100" y2="138" class="branch-thin"/>
+  <line x1="100" y1="138" x2="120" y2="138" class="branch"/>
+  <text x="128" y="142" class="modname">base.py</text>
+  <text x="220" y="142" class="ann">Agent protocol: name + run(input) → str</text>
+
+  <!-- eval/ -->
+  <line x1="60" y1="48" x2="60" y2="172" class="branch-thin"/>
+  <line x1="60" y1="172" x2="80" y2="172" class="branch"/>
+  <text x="88" y="176" class="mod">eval/</text>
+  <line x1="100" y1="179" x2="100" y2="202" class="branch-thin"/>
+  <line x1="100" y1="202" x2="120" y2="202" class="branch"/>
+  <text x="128" y="206" class="modname">runner.py</text>
+  <text x="220" y="206" class="ann">EvalRunner skeleton — no scoring yet</text>
+
+  <!-- storage/ -->
+  <line x1="60" y1="48" x2="60" y2="236" class="branch-thin"/>
+  <line x1="60" y1="236" x2="80" y2="236" class="branch"/>
+  <text x="88" y="240" class="mod">storage/</text>
+  <line x1="100" y1="243" x2="100" y2="266" class="branch-thin"/>
+  <line x1="100" y1="266" x2="120" y2="266" class="branch"/>
+  <text x="128" y="270" class="modname">db.py</text>
+  <text x="220" y="270" class="ann">SQLite connection + insert helpers</text>
+  <line x1="100" y1="266" x2="100" y2="294" class="branch-thin"/>
+  <line x1="100" y1="294" x2="120" y2="294" class="branch"/>
+  <text x="128" y="298" class="modname">schema.py</text>
+  <text x="220" y="298" class="ann">runs · cases · results tables</text>
+
+  <!-- tests/ -->
+  <text x="30" y="338" class="root">tests/</text>
+  <line x1="60" y1="346" x2="60" y2="362" class="branch-thin"/>
+  <line x1="60" y1="362" x2="80" y2="362" class="branch"/>
+  <text x="88" y="366" class="ann">test_runner.py · test_smoke.py · test_storage.py (6 tests)</text>
+</svg>
+<div class="figcaption">Figure 2. The M1 package layout. <em>(M2 will add</em> <code>stats/bootstrap.py</code><em>,</em> <code>agents/anthropic_agent.py</code><em>,</em> <code>eval/judge.py</code><em>,</em> <code>eval/aggregate.py</code><em>.)</em></div>
+</div>
+
+<p>Public repository:</p>
+<div class="repo-link">github.com/subramanyanashwath/gnomon</div>
+<p style="font-family: var(--sans); font-size: 0.9rem; color: var(--muted); margin-top: 0.4rem;">MIT license. Python 3.11+. Packaged with hatchling. Pip distribution name <code>gnomon-eval</code> (the PyPI <code>gnomon</code> slot is squatted by an abandoned 2012 placeholder; reclaim filed in parallel — the import name remains <code>gnomon</code>, matching the <code>scikit-learn</code>/<code>sklearn</code> pattern).</p>
+
+<h2>Six features, frozen</h2>
+
+<p>The PRD freezes V1 scope at six features. Anything not in this list does not get built before alpha (M5, due 2026-09-15). The V2 backlog catches the "wouldn't it be cool if" ideas — and there have already been several — but the contract is the PRD.</p>
+
+<ol class="feature-list">
+  <li><div><strong>Eval runner</strong> — Agent protocol, native runner, transcript ingestor (Bloom JSONL, Inspect logs, raw JSONL).</div><span class="status frozen">V1</span></li>
+  <li><div><strong>Bootstrapped CIs</strong> on aggregate scores. Configurable resamples; percentile, basic, and BCa methods.</div><span class="status frozen">V1</span></li>
+  <li><div><strong>Power analysis</strong> — sample-size recommendation given effect size, α, and target power.</div><span class="status frozen">V1</span></li>
+  <li><div><strong>Judge calibration</strong> — Cohen's κ, Krippendorff's α, Spearman with bootstrapped CIs, bucketed agreement matrix.</div><span class="status frozen">V1</span></li>
+  <li><div><strong>A/B harness</strong> — paired comparison with bootstrapped CIs on the difference; sequential testing with alpha-spending; pre-run power analysis.</div><span class="status frozen">V1</span></li>
+  <li><div><strong>Storage + reports</strong> — SQLite + HTML + machine-readable JSON + markdown executive summary leading with <em>Decision: SHIP / DON'T SHIP / UNDERPOWERED</em>.</div><span class="status frozen">V1</span></li>
+</ol>
+
+<div class="callout">
+  Out of scope for V1 — explicitly: distribution-shift detection, reward-model patterns, multi-judge ensembling, Bayesian A/B, multi-arm bandit, full Bloom adapter, Petri adapter, Streamlit dashboard, agent-trace eval primitives, sabotage/reward-hacking detection. If it is not in the list of six above, it does not get built before alpha. This is the most important sentence in the PRD.
+</div>
+
+<h2>Voice and rules</h2>
+
+<p>Every M1 commit carries the same constraints that every M2 commit will. They are recorded in <code>CLAUDE.md</code> and <code>PRD.md</code> so they survive future-context drift and personnel changes — including the maintainer's own context-window resets.</p>
+
+<div class="constraint-box">
+  <ul>
+    <li><strong>TL;DR upfront.</strong> Lead with the conclusion.</li>
+    <li><strong>Honest limitations.</strong> Every report includes a "Gnomon is bad at: X, Y, Z" section. Non-negotiable.</li>
+    <li><strong>Cite the lineage.</strong> Don't reinvent. Hashimoto et al. is named. Bloom and Petri are named. Inspect AI and HELM are named.</li>
+    <li><strong>Precise language.</strong> "95% bootstrapped CI" — not "pretty confident."</li>
+    <li><strong>Calm, curious, specific.</strong> Not promotional, not academic-stuffy.</li>
+    <li><strong>Platform-neutral.</strong> No Microsoft-specific code paths. <code>HTTPAgent</code> is the universal escape hatch.</li>
+    <li><strong>No customer data, ever.</strong> Synthetic datasets and public benchmarks only.</li>
+    <li><strong>HTML-first reports.</strong> Per Thariq's "Unreasonable Effectiveness of HTML" (May 2026). Source files stay in markdown for git-diff sanity.</li>
+  </ul>
+</div>
+
+<h2>Honest limitations</h2>
+
+<p>M1 ships no statistical functionality. The list below is what is <em>not</em> in this milestone.</p>
+
+<ul class="limit-list">
+  <li>No confidence intervals. No power analyses. No judge calibrators. No eval results scored against anything.</li>
+  <li>The <code>EvalRunner</code> is a skeleton — it loops over cases and calls an agent, but no agent adapter exists yet for an actual model.</li>
+  <li>The <code>Agent</code> protocol has only an echo-style stub in tests. <code>AnthropicAgent</code> and <code>OpenAIAgent</code> are M2 and later.</li>
+  <li>The storage schema accepts a <code>score</code> column, but nothing populates it yet.</li>
+  <li>No HTML report generator. The report you are reading was hand-written; the templating that produces this kind of artifact from a <code>BootstrapResult</code> automatically is M4.</li>
+</ul>
+
+<p>This is by design. Foundation milestones that try to ship features tend to ship unstable foundations.</p>
+
+<blockquote>A milestone you can mentally hold the whole boundary of is a milestone whose scope you tend to keep.</blockquote>
+
+<h2>What's next</h2>
+
+<div class="milestone-strip">
+  <div class="ms done"><div class="id">M1</div><span class="date">2026-05-09 · done</span></div>
+  <div class="ms current"><div class="id">M2</div><span class="date">2026-06-30</span></div>
+  <div class="ms"><div class="id">M3</div><span class="date">2026-07-31</span></div>
+  <div class="ms"><div class="id">M4</div><span class="date">2026-08-31</span></div>
+  <div class="ms"><div class="id">M5</div><span class="date">2026-09-15 · α</span></div>
+  <div class="ms"><div class="id">v1.0</div><span class="date">2027-02</span></div>
+  <div class="ms"><div class="id">v2.0</div><span class="date">2027-06</span></div>
+</div>
+
+<p>M2 is bootstrapped CIs end-to-end plus the first real eval against Claude through the Anthropic adapter. Every statistical primitive must ship with a property-based test against a scipy or R reference. The point of M2 is not throughput; it is correctness.</p>
+
+<p style="font-family: var(--sans); font-size: 0.9rem; color: var(--muted);">The M2 report is available at <a href="m2.html">m2.html</a> in this directory.</p>
+
+<hr class="nav-rule">
+
+<footer class="notes">
+  <h3>Sources</h3>
+  <ol>
+    <li><a href="../PRD.md">docs/PRD.md</a> v0.3 — full product requirements document.</li>
+    <li><a href="../JOURNAL.md">docs/JOURNAL.md</a> — build log entry for 2026-05-09 (M1 shipped).</li>
+    <li><a href="../decisions/0001-naming.md">docs/decisions/0001-naming.md</a> — naming ADR.</li>
+    <li><a href="../../CLAUDE.md">CLAUDE.md</a> — voice rules, hard rules, milestone list.</li>
+    <li><a href="../../README.md">README.md</a> — top-level repository surface.</li>
+  </ol>
+  <h3>Cited lineage</h3>
+  <ol>
+    <li>Hashimoto et al., <a href="https://www.anthropic.com/news/statistical-approach-to-model-evals">A statistical approach to model evaluations</a> (Anthropic, Nov 2024) — methodological foundation.</li>
+    <li>Anthropic Bloom — automated behavioral evaluation; quantification layer.</li>
+    <li>Anthropic Petri — automated auditing; discovery layer.</li>
+    <li>UK AISI <a href="https://inspect.ai-safety-institute.org.uk/">Inspect AI</a> — API design and log-viewer precedent.</li>
+    <li>Stanford CRFM HELM — multidimensional results presentation.</li>
+    <li>Thariq, <em>Using Claude Code: The Unreasonable Effectiveness of HTML</em> (May 2026) — output format choice for milestone reports.</li>
+  </ol>
+  <h3>Colophon</h3>
+  <p>This report is a single self-contained HTML file. No external dependencies, no CDN fonts, no analytics. Open it locally, host it anywhere, share the file. ~17 KB rendered. Set in a system serif body (Iowan Old Style → Charter → Georgia), with a system monospace for code. Ochre accent: <code>#8B4B2A</code>.</p>
+</footer>
+
+</div>
+</body>
+</html>
