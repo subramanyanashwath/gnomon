@@ -51,3 +51,7 @@ addopts = "-v"
 [tool.mypy]
 python_version = "3.11"
 strict = true
+
+[[tool.mypy.overrides]]
+module = ["anthropic", "anthropic.*"]
+ignore_missing_imports = true
