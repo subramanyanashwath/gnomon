@@ -4,6 +4,41 @@ Build log. One entry per milestone or significant event. Brief, honest, dated. N
 
 ---
 
+## 2026-06-12 — repo reconciled, live-run harness ready; M2 down to one command
+
+After a 23-day quiet stretch, brought the repo back to a single source of truth and built
+the last missing piece of M2.
+
+**Reconciled**
+- Local main and origin/main had silently diverged since May 20: the M2 code
+  (`AnthropicAgent` + `LLMJudge` + `score_ci`) was committed twice — once on a local
+  feature branch, once to origin/main via GitHub web upload. Trees were byte-identical
+  except `m1.html`'s path. Adopted origin/main as canonical; deleted both duplicate
+  branches locally and on the remote. One branch, one history.
+- Verified post-sync: 46 tests pass, ruff clean.
+
+**Verified**
+- `LLMJudge.score`'s structured-output call checked against the current Anthropic API:
+  `output_config={"format": {"type": "json_schema", "schema": ...}}` is the canonical
+  shape. No code change needed — the pre-run flag from May is closed.
+
+**Shipped**
+- `examples/live_run_mmlu_pro.py` — the M2 live run, end to end: 50 MMLU-Pro questions
+  (fetched from the HF datasets server, cached at `examples/data/` for reproducibility;
+  5 categories: math, business, psychology, health, chemistry) → `AnthropicAgent` →
+  `LLMJudge` → `score_ci` → a ship / don't-ship / underpowered verdict against a 0.5
+  pass-rate bar, persisted to SQLite via the storage layer. Defaults: haiku-4.5 as the
+  model under test (non-saturated on MMLU-Pro, so the CI is interesting), sonnet-4.6
+  as judge.
+
+**Remaining for M2:** execute the run with a real API key and record the verdict here.
+
+**Reflection.** The work was done on May 20; what was missing for three weeks was the
+*landing* — sync, merge, and the connective script. Built-but-not-merged is the same
+failure mode as planned-but-not-built, wearing better clothes.
+
+---
+
 ## 2026-05-09 (later) — M2 begins: `bootstrap_ci` shipped, first external case study
 
 Late same-day, started M2. Shipped the first statistical primitive and used it on a real external benchmark.
