@@ -10,5 +10,22 @@ the reference implementation directly (see ``tests/test_stats_*.py``).
 """
 
 from gnomon.stats.bootstrap import BootstrapResult, bootstrap_ci
+from gnomon.stats.power import (
+    PowerResult,
+    cohens_h,
+    power_one_proportion,
+    power_two_proportions,
+    required_n_one_proportion,
+    required_n_two_proportions,
+)
 
-__all__ = ["BootstrapResult", "bootstrap_ci"]
+__all__ = [
+    "BootstrapResult",
+    "PowerResult",
+    "bootstrap_ci",
+    "cohens_h",
+    "power_one_proportion",
+    "power_two_proportions",
+    "required_n_one_proportion",
+    "required_n_two_proportions",
+]

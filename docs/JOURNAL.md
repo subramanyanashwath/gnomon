@@ -4,7 +4,41 @@ Build log. One entry per milestone or significant event. Brief, honest, dated. N
 
 ---
 
-## 2026-06-12 — repo reconciled, live-run harness ready; M2 down to one command
+## 2026-07-02 — scope check vs. Satya memo + MFC; M3 begins: power analysis shipped
+
+Two Microsoft announcements landed (Satya's "frontier ecosystem" memo, the Microsoft
+Frontier Company launch) and forced the question: rescope? Answer, recorded in
+[ADR-0002](decisions/0002-scope-response-satya-mfc.md): **no**. The memo's "private evals
+should capture whether a model is actually improving against outcomes that matter" is the
+PRD §2 thesis in a CEO's words. V1 stays frozen; narrative gains the *private evals*
+vocabulary; two entries added to the §6 backlog (longitudinal improvement tracking,
+outcome-metric ingestion); publish-before-onboard upgrades from goal to hard requirement.
+
+**Shipped (M3 feature 1 of 2)**
+- `gnomon.stats.power` — power analysis for pass-rate evals. `required_n_one_proportion`
+  (pass rate vs. a ship bar), `required_n_two_proportions` (A/B, per-arm), achieved-power
+  twins for both, `cohens_h`, and a `PowerResult` that answers the decision question
+  directly: `.is_powered(n_available)`.
+- 39 tests: golden values from R's `pwr` package (`pwr.p.test` h=0.2 → n=196.2215;
+  `pwr.2p.test` → 392.443), an independent scipy reconstruction of the closed form,
+  round-trip (required n achieves target power), monotonicity, validation. Suite now
+  85 passing.
+- A test that tells on our own M2 design: at n=50 against a 0.5 bar, the live run is
+  only powered for large effects (true rate ≳0.7). Detecting 0.6 vs. 0.5 needs n=194.
+  The tool criticizing its own eval is the tool working.
+
+**Hardened**
+- mypy strict now passes across all 15 source files (scipy stub override); removed
+  `continue-on-error` from the CI mypy step — type checking is gating from here on.
+
+**Still open for M2:** execute `examples/live_run_mmlu_pro.py` with a real API key and
+record the verdict here. Everything is staged; it is one command.
+
+**Remaining for M3 (due 2026-07-31):** judge calibration — Cohen's κ, Krippendorff's α,
+Spearman with bootstrapped CIs (composes with `bootstrap_ci`), bucketed agreement matrix,
+and the recommendation sentence from PRD §5.4. Reference-test κ and α against golden
+values from R's `irr`/`icr` packages or the `krippendorff` PyPI package as a dev
+dependency — not against hand-derived numbers.
 
 After a 23-day quiet stretch, brought the repo back to a single source of truth and built
 the last missing piece of M2.

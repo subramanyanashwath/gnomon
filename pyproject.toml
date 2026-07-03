@@ -53,5 +53,5 @@ python_version = "3.11"
 strict = true
 
 [[tool.mypy.overrides]]
-module = ["anthropic", "anthropic.*"]
+module = ["anthropic", "anthropic.*", "scipy", "scipy.*"]
 ignore_missing_imports = true
