@@ -1,8 +1,8 @@
 # Gnomon — Product Requirements Document
 
-**Version:** 0.3
+**Version:** 0.4
 **Owner:** Ashwath
-**Last updated:** 2026-05-09
+**Last updated:** 2026-07-02 (§6 backlog additions per [ADR-0002](decisions/0002-scope-response-satya-mfc.md); scope unchanged)
 **Status:** Active — guides V1 build
 
 ---
@@ -46,7 +46,7 @@ Gnomon is the statistical decision layer. It runs native evals or ingests result
 
 ## 6. Out of scope for V1 (V2 backlog)
 
-Distribution shift detection · reward model patterns · multi-judge ensembling · Bayesian A/B · multi-arm bandit · Bloom adapter (full) · Petri adapter · Streamlit dashboard · agent-trace eval primitives (tool-use scoring, multi-step) · sabotage / reward-hacking detection patterns.
+Distribution shift detection · reward model patterns · multi-judge ensembling · Bayesian A/B · multi-arm bandit · Bloom adapter (full) · Petri adapter · Streamlit dashboard · agent-trace eval primitives (tool-use scoring, multi-step) · sabotage / reward-hacking detection patterns · longitudinal improvement tracking (regression detection across a run series; per [ADR-0002](decisions/0002-scope-response-satya-mfc.md)) · outcome-metric ingestion (join eval scores against business KPIs; per ADR-0002).
 
 **If it's not in §5, it does not get built before alpha.**
 
